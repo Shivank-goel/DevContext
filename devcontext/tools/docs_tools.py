@@ -1,0 +1,1 @@
+"""Docs / RAG tools (stub)."""
