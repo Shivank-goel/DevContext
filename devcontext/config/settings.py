@@ -1,11 +1,21 @@
-"""Pydantic settings and environment (stub)."""
-from pydantic_settings import BaseSettings
+"""Pydantic settings and environment."""
 from pathlib import Path
+from typing import Literal
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
-    # LLM
-    anthropic_api_key: str
-    model_name: str = "claude-sonnet-4-20250514"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
+
+    # LLM — local Ollama (see README for serve + pull)
+    llm_provider: Literal["ollama"] = "ollama"
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.1:8b"
+    embedding_model: str = "nomic-embed-text"
 
     # Paths
     docs_dir: Path = Path("docs")
@@ -21,8 +31,5 @@ class Settings(BaseSettings):
     mcp_server_host: str = "0.0.0.0"
     mcp_server_port: int = 8000
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
 settings = Settings()
