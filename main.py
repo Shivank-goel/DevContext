@@ -2,6 +2,10 @@ from devcontext.config.llm import get_chat_model
 from devcontext.config.settings import settings
 from devcontext.rag.ingestion import ingest
 from devcontext.rag.retriever import Retriever
+from devcontext.rag.retriever import Retriever
+from devcontext.tools.file_tools import read_file, list_files
+from devcontext.tools.git_tools import get_recent_commits, get_repo_summary
+from devcontext.tools.docs_tools import search_docs
 
 
 def main():
@@ -25,6 +29,32 @@ def main():
     print(f"Retrieved {len(docs)} chunk(s)")
     for i, doc in enumerate(docs, start=1):
         print(f"\n[Chunk {i}] {doc.page_content[:200]}...")
+
+    print("=" * 40)
+    print("Testing file_tools...")
+    result = read_file("docs/sample.md")
+    print(f"read_file: {result['lines']} lines, {result['size_bytes']} bytes")
+
+    files = list_files(".", extensions=[".py"])
+    print(f"list_files: {files['file_count']} Python files found")
+
+    print("\nTesting git_tools...")
+    summary = get_repo_summary()
+    if summary.get("error"):
+        print(f"git: {summary['error']}")
+    else:
+        print(f"Branch: {summary['branch']}")
+        print(f"Latest commit: {summary['latest_commit']['hash']} — {summary['latest_commit']['message']}")
+        print(f"Tracked files: {summary['tracked_files']}")
+
+    commits = get_recent_commits(n=3)
+    if not commits.get("error"):
+        print(f"Recent commits: {len(commits['commits'])} fetched")
+
+    print("\nTesting docs_tools...")
+    result = search_docs("How does the RAG pipeline work?")
+    print(f"search_docs: {len(result['chunks'])} chunks retrieved")
+    print(f"First chunk preview: {result['chunks'][0]['content'][:100]}...")
 
 
 if __name__ == "__main__":
