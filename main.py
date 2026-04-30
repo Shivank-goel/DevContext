@@ -6,6 +6,10 @@ from devcontext.rag.retriever import Retriever
 from devcontext.tools.file_tools import read_file, list_files
 from devcontext.tools.git_tools import get_recent_commits, get_repo_summary
 from devcontext.tools.docs_tools import search_docs
+from devcontext.agents import AgentState
+from devcontext.agents.code_agent import code_agent
+from devcontext.agents.review_agent import review_agent
+from devcontext.agents.docs_agent import docs_agent
 
 
 def main():
@@ -55,6 +59,55 @@ def main():
     result = search_docs("How does the RAG pipeline work?")
     print(f"search_docs: {len(result['chunks'])} chunks retrieved")
     print(f"First chunk preview: {result['chunks'][0]['content'][:100]}...")
+
+
+    # --- Code Agent ---
+    print("Testing Code Agent...")
+    state: AgentState = {
+        "query": "What settings are configured in this file?",
+        "filepath": "devcontext/config/settings.py",
+        "agent": "",
+        "file_content": None,
+        "diff": None,
+        "retrieved_context": None,
+        "response": None,
+        "error": None
+    }
+    result = code_agent(state)
+    print(f"Agent: {result['agent']}")
+    print(f"Response:\n{result['response']}\n")
+
+    # --- Review Agent ---
+    print("Testing Review Agent...")
+    state2: AgentState = {
+        "query": "Review this file",
+        "filepath": "devcontext/tools/file_tools.py",
+        "agent": "",
+        "file_content": None,
+        "diff": None,
+        "retrieved_context": None,
+        "response": None,
+        "error": None
+    }
+    result2 = review_agent(state2)
+    print(f"Agent: {result2['agent']}")
+    print(f"Response:\n{result2['response']}\n")
+
+    # --- Docs Agent ---
+    print("Testing Docs Agent...")
+    state3: AgentState = {
+        "query": "How does the RAG pipeline work?",
+        "filepath": None,
+        "agent": "",
+        "file_content": None,
+        "diff": None,
+        "retrieved_context": None,
+        "response": None,
+        "error": None
+    }
+    result3 = docs_agent(state3)
+    print(f"Agent: {result3['agent']}")
+    print(f"Response:\n{result3['response']}\n")
 
 
 if __name__ == "__main__":
