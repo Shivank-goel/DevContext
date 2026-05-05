@@ -6,6 +6,7 @@ from devcontext.rag.ingestion import ingest
 from devcontext.rag.retriever import Retriever
 from devcontext.agents.supervisor import run
 from devcontext.api.routes import app
+from devcontext.rag.evaluator import run_evaluation, print_eval_report
 
 
 def test_graph():
@@ -24,6 +25,11 @@ def test_graph():
         print(f"→ Routed to: {result['agent_used']}")
         print(f"→ Response: {result['response'][:150]}...\n")
 
+def test_evaluation():
+    print("=" * 40)
+    print("Running RAG Evaluation (this takes ~2 mins)...")
+    scores = run_evaluation()
+    print_eval_report(scores)
 
 def main():
     print("DevContext starting...")
@@ -46,6 +52,7 @@ def main():
     print("=" * 40)
     print(f"Starting FastAPI server on http://localhost:{settings.mcp_server_port}")
     print(f"Docs at http://localhost:{settings.mcp_server_port}/docs\n")
+    test_evaluation()
     uvicorn.run(app, host=settings.mcp_server_host, port=settings.mcp_server_port)
 
 

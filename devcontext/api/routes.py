@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from devcontext.agents.supervisor import run
+from devcontext.rag.evaluator import run_evaluation, print_eval_report
 
 app = FastAPI(
     title="DevContext API",
@@ -72,3 +73,14 @@ def search_docs_endpoint(request: QueryRequest):
     """Force route to docs_agent."""
     result = run(request.query, filepath=None)
     return QueryResponse(**result)
+
+@app.post("/eval")
+def evaluate_rag():
+    """
+    Run RAGAS evaluation on the RAG pipeline.
+    Returns faithfulness and answer_relevancy (no context_precision without a `reference` column).
+    Warning: can take several minutes (LLM + embeddings calls).
+    """
+    scores = run_evaluation()
+    print_eval_report(scores)
+    return scores
