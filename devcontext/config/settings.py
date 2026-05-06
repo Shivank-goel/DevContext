@@ -31,5 +31,23 @@ class Settings(BaseSettings):
     mcp_server_host: str = "0.0.0.0"
     mcp_server_port: int = 8000
 
+    # LangSmith
+    langsmith_project: str = "devContext"
+    langsmith_tracing: bool = True
 
+
+import os
+
+def setup_tracing():
+    """
+    Configure LangSmith tracing via environment variables.
+    LangChain/LangGraph automatically picks these up.
+    """
+    if settings.langsmith_tracing and settings.langsmith_api_key:
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_API_KEY"] = settings.langsmith_api_key
+        os.environ["LANGCHAIN_PROJECT"] = settings.langsmith_project
+        print(f"LangSmith tracing enabled → project: {settings.langsmith_project}")
+    else:
+        print("LangSmith tracing disabled — set LANGSMITH_API_KEY to enable")
 settings = Settings()

@@ -9,6 +9,7 @@ from devcontext.config.settings import settings
 from devcontext.tools.docs_tools import search_docs
 from devcontext.agents.docs_agent import docs_agent
 from devcontext.agents import AgentState
+from langsmith import traceable
 
 
 def get_ragas_llm():
@@ -71,7 +72,7 @@ def build_eval_dataset(test_queries: list[str]) -> Dataset:
 
     return Dataset.from_dict(rows)
 
-
+#@traceable(name="ragas_evaluation", tags=["eval"])
 def run_evaluation(test_queries: list[str] = None) -> dict:
     """
     Full RAGAS evaluation pipeline.

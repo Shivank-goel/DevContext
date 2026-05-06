@@ -1,12 +1,13 @@
 import uvicorn
 import threading
-from devcontext.config.settings import settings
+from devcontext.config.settings import settings, setup_tracing
 from langchain_ollama import ChatOllama
 from devcontext.rag.ingestion import ingest
 from devcontext.rag.retriever import Retriever
 from devcontext.agents.supervisor import run
 from devcontext.api.routes import app
 from devcontext.rag.evaluator import run_evaluation, print_eval_report
+
 
 
 def test_graph():
@@ -32,6 +33,9 @@ def test_evaluation():
     print_eval_report(scores)
 
 def main():
+    # setup tracing
+    setup_tracing()
+
     print("DevContext starting...")
     print(f"LLM       : Ollama ({settings.ollama_model})")
     print(f"Ollama URL: {settings.ollama_base_url}")
